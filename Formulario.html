@@ -22,12 +22,37 @@
     $(document).ready(function(){
         
         $("#error").hide();
+        $("#nice").hide();
+        // Funcion para generar el Capcha
+            // tomada y adaptada del siguiente link http://jquery-manual.blogspot.com/2013/09/generar-codigo-aleatorio-partir-de.html
+            function rand_code(chars, lon){
+                    code = "";
+                    for (x=0; x < lon; x++)
+                    {
+                    rand = Math.floor(Math.random()*chars.length);
+                    code += chars.substr(rand, 1);
+                    }
+                    return code;
+                }
+                // Declaramos una cadena de caracteres    
+                var    caracteres = "0123456789abcdefABCDEF?¿¡!:;";
+                var    longitud = 5;
+                //llamamos la funcion y luego llenamos el textbox
+                var captcha = rand_code(caracteres,longitud);
+                $("#captcha1").val(captcha);
+            
+            // Habilitamos un boton para generar nuevos capcha en caso que el generado sea muy complejo.
+            $("#captcha").click(function(){
+                
+                var captcha = rand_code(caracteres,longitud);
+
+                $("#captcha1").val(captcha);
+            });
 
         $("#formulario").submit(function(){
 
             var mensaje ="";
-            
-            
+                        
             // Calcular Dígito Verificador en base al Módulo 11 (rut en formato 12345678-9)
                 rut = $("#rut").val().slice(0,-1);
                 dv = $("#rut").val().slice(-1);
@@ -78,6 +103,10 @@
                 mensaje = "La contraseña debe incluir al menos un numero";    
             }
             
+            //Comprobamos que el usuario haya replicado el captcha
+            if($("#captcha1").val()!=$("#captcha2").val()){
+                    mensaje = "Ingrese el captcha correctamente.";
+            } 
 
 
 
@@ -101,6 +130,10 @@
                 $("#error").html(mensaje);
                 $("#error").show();
                 event.preventDefault();
+            }else{
+                mensaje = "Registro Exitoso!";
+                $("#nice").html(mensaje);
+                $("#nice").show();
             }
         });
     })
@@ -138,10 +171,17 @@
                     <label for="password"> Confirme Constraseña: </label>
                     <input type="password" class="form-control" id="password2" name="password2">
                 </div>
+                <div class="form-group">
+                    <label for="captcha1">Escriba el Captcha: </label>
+                    <input type="text user-select:none" class="form-control" id="captcha1" name="captcha1" disabled >
+                    <input type="text" class="form-control" id="captcha2" name="captcha2" >
+                    <button type="button" class="btn btn-primary" id="captcha">Generar Captcha</button>
+                </div>
                 <br>
                 <input type="submit" class="btn btn-danger" id="enviar" value="Enviar">
                 <input type="reset" class="btn btn-primary" id="limpiar" value="Limpiar">
-                <div id="error" class="alert alert-danger" role="alert"></div>    
+                <div id="error" class="alert alert-danger" role="alert"></div>
+                <div id="nice" class="alert alert-success" role="alert"></div>    
             </form>
             <div class="col-sm-4"></div>
         </div>
